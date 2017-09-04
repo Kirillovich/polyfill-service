@@ -162,7 +162,7 @@ it('subclasses should be instances of Event if the UA implements DOM3', function
 	a.click();
 })
 
-it('should separete namespaces with capture option of EventListenerOptions', function () {
+it('should separate namespaces with capture option of EventListenerOptions', function () {
 	var cnt = 0;
 	var testEl = document.createElement('div');
 	var listener = function() {
