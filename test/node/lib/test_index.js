@@ -63,15 +63,15 @@ describe("polyfillio", () => {
 					},
 					uaString: 'chrome/30'
 				}).then(result => assert.deepEqual(setsToArrays(result), {
-					Event: { flags: [], aliasOf: ["Promise", "XMLHttpRequest", "fetch"] },
-					fetch: { flags: [] },
-					Promise: { flags: [], aliasOf: [ 'fetch' ] }
-				})),
+						Event: { flags: [], aliasOf: ["XMLHttpRequest", "fetch"] },
+						fetch: { flags: [] },
+						Promise: { flags: [], aliasOf: ['fetch'] }
+					})),
 				polyfillio.getPolyfills({
 					features: {
 						'fetch': {}
 					},
-					excludes: ["Event", "Promise", "non-existent-feature"],
+					excludes: ["XMLHttpRequest", "Promise", "non-existent-feature"],
 					uaString: 'chrome/30'
 				}).then(result => assert.deepEqual(setsToArrays(result), {
 					fetch: { flags: [] }
