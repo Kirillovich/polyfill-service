@@ -218,6 +218,7 @@
 			}
 		});
 	}
+
 	var supportEventListenerOptions = false;
 	try {
 		document.createElement('div').addEventListener('test', null, Object.defineProperty({}, 'capture', {
@@ -226,6 +227,7 @@
 			}
 		}));
 	} catch (e) { }
+
 	if (!supportEventListenerOptions) {
 		var windowAddEventListener = Window.prototype.addEventListener;
 		var documentAddEventListener = Document.prototype.addEventListener;
