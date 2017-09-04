@@ -227,21 +227,60 @@
 		}));
 	} catch (e) { }
 	if (!supportEventListenerOptions) {
-		var _addEventListener = window.addEventListener;
-		window.addEventListener = Window.prototype.addEventListener = Document.prototype.addEventListener = Element.prototype.addEventListener = function addEventListener (type, listener) {
+		var windowAddEventListener = Window.prototype.addEventListener;
+		var documentAddEventListener = Document.prototype.addEventListener;
+		var elementAddEventListener = Element.prototype.addEventListener;
+
+		Window.prototype.addEventListener = function (type, listener) {
 			var opts = arguments[2];
 			if (opts instanceof Object) {
 				opts = opts.capture;
 			}
-			return _addEventListener.call(this, type, listener, opts);
+			return windowAddEventListener.call(this, type, listener, opts);
 		};
-		var _removeEventListener = window.removeEventListener;
-		window.removeEventListener = Window.prototype.removeEventListener = Document.prototype.removeEventListener = Element.prototype.removeEventListener = function removeEventListener (type, listener) {
+
+		Document.prototype.addEventListener = function (type, listener) {
 			var opts = arguments[2];
 			if (opts instanceof Object) {
 				opts = opts.capture;
 			}
-			return _removeEventListener.call(this, type, listener, opts);
+			return documentAddEventListener.call(this, type, listener, opts);
+		};
+
+		Element.prototype.addEventListener = function (type, listener) {
+			var opts = arguments[2];
+			if (opts instanceof Object) {
+				opts = opts.capture;
+			}
+			return elementAddEventListener.call(this, type, listener, opts);
+		};
+
+		var windowRemoveEventListener = Window.prototype.removeEventListener;
+		var documentRemoveEventListener = Document.prototype.removeEventListener;
+		var elementRemoveEventListener = Element.prototype.removeEventListener;
+
+		Window.prototype.removeEventListener = function (type, listener) {
+			var opts = arguments[2];
+			if (opts instanceof Object) {
+				opts = opts.capture;
+			}
+			return windowRemoveEventListener.call(this, type, listener, opts);
+		};
+
+		Document.prototype.removeEventListener = function (type, listener) {
+			var opts = arguments[2];
+			if (opts instanceof Object) {
+				opts = opts.capture;
+			}
+			return documentRemoveEventListener.call(this, type, listener, opts);
+		};
+
+		Element.prototype.removeEventListener = function (type, listener) {
+			var opts = arguments[2];
+			if (opts instanceof Object) {
+				opts = opts.capture;
+			}
+			return elementRemoveEventListener.call(this, type, listener, opts);
 		};
 	}
 }());
