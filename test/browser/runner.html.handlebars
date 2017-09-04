@@ -16,7 +16,7 @@
 
 	{{#loadPolyfill}}
 		<!-- Code under test -->
-		<script src='/v2/polyfill.js?flags=gated{{#forceAlways}},always{{/forceAlways}}&amp;features={{#features}}{{feature}},{{/features}}'></script>
+		<script src='/v2/polyfill.js?flags=gated{{#forceAlways}},always{{/forceAlways}}&amp;features={{#features}}{{feature}},{{/features}}&amp;rum=1'></script>
 	{{/loadPolyfill}}
 
 	<!-- Tests -->
@@ -90,7 +90,8 @@
 				name: test.fullTitle(),
 				result: false,
 				message: err.message,
-				stack: err.stack
+				stack: err.stack,
+				failingSuite: getFirstLevelSuite(test)
 			});
 		});
 
