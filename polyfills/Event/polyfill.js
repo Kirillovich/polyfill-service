@@ -1,4 +1,9 @@
 (function () {
+	// This polyfill depends on availability of `document` so will not run in a worker
+	// However, we asssume there are no browsers with worker support that lack proper
+	// support for `Event` within the worker
+	if (typeof document === 'undefined' || typeof window === 'undefined') return;
+
 	var unlistenableWindowEvents = {
 		click: 1,
 		dblclick: 1,
@@ -17,10 +22,6 @@
 		textinput: 1
 	};
 
-	// This polyfill depends on availability of `document` so will not run in a worker
-	// However, we asssume there are no browsers with worker support that lack proper
-	// support for `Event` within the worker
-	if (typeof document === 'undefined' || typeof window === 'undefined') return;
 
 	function indexOf(array, element) {
 		var
@@ -229,60 +230,30 @@
 	} catch (e) { }
 
 	if (!supportEventListenerOptions) {
-		var windowAddEventListener = Window.prototype.addEventListener;
-		var documentAddEventListener = Document.prototype.addEventListener;
-		var elementAddEventListener = Element.prototype.addEventListener;
+		Window.prototype.addEventListener = createAddEventListener(Window.prototype.addEventListener)
+		Document.prototype.addEventListener = createEventListener(Document.prototype.addEventListener);
+		Element.prototype.addEventListener = createEventListener(Element.prototype.addEventListener);
+		Window.prototype.removeEventListener = createRemoveEventListener(Window.prototype.removeEventListener);
+		Document.prototype.removeEventListener = createRemoveEventListener(Document.prototype.removeEventListener);
+		Element.prototype.removeEventListener = createRemoveEventListener(Element.prototype.removeEventListener);
+	}
 
-		Window.prototype.addEventListener = function (type, listener) {
-			var opts = arguments[2];
-			if (opts instanceof Object) {
-				opts = opts.capture;
+	function createAddEventListener(addEventListener) {
+		return function (type, handler, options) {
+			if (options instanceof Object) { // Won't work with options Object from a different Realm
+				options = options.capture;
 			}
-			return windowAddEventListener.call(this, type, listener, opts);
-		};
-
-		Document.prototype.addEventListener = function (type, listener) {
-			var opts = arguments[2];
-			if (opts instanceof Object) {
-				opts = opts.capture;
-			}
-			return documentAddEventListener.call(this, type, listener, opts);
-		};
-
-		Element.prototype.addEventListener = function (type, listener) {
-			var opts = arguments[2];
-			if (opts instanceof Object) {
-				opts = opts.capture;
-			}
-			return elementAddEventListener.call(this, type, listener, opts);
-		};
-
-		var windowRemoveEventListener = Window.prototype.removeEventListener;
-		var documentRemoveEventListener = Document.prototype.removeEventListener;
-		var elementRemoveEventListener = Element.prototype.removeEventListener;
-
-		Window.prototype.removeEventListener = function (type, listener) {
-			var opts = arguments[2];
-			if (opts instanceof Object) {
-				opts = opts.capture;
-			}
-			return windowRemoveEventListener.call(this, type, listener, opts);
-		};
-
-		Document.prototype.removeEventListener = function (type, listener) {
-			var opts = arguments[2];
-			if (opts instanceof Object) {
-				opts = opts.capture;
-			}
-			return documentRemoveEventListener.call(this, type, listener, opts);
-		};
-
-		Element.prototype.removeEventListener = function (type, listener) {
-			var opts = arguments[2];
-			if (opts instanceof Object) {
-				opts = opts.capture;
-			}
-			return elementRemoveEventListener.call(this, type, listener, opts);
+			return addEventListener.call(this, type, handler, options);
 		};
 	}
+
+	function createRemoveEventListener(removeEventListener) {
+		return function (type, handler, options) {
+			if (options instanceof Object) { // Won't work with options Object from a different Realm
+				options = options.capture;
+			}
+			return removeEventListener.call(this, type, handler, options);
+		};
+	}
+
 }());
